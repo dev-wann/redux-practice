@@ -1,33 +1,14 @@
 import { createStore } from 'redux';
+import { reducer } from './reducers/index.js';
+import { logIn, logOut } from './actions/user.js';
+import { addPost } from './actions/post.js';
 
-function reducer(prevState, action) {
-  switch (action.type) {
-    case 'LOG_IN':
-      return { ...prevState, user: action.data };
-    case 'LOG_OUT':
-      return { ...prevState, user: null };
-    case 'ADD_POST': {
-      return { ...prevState, posts: [...prevState.posts, action.data] };
-    }
-    default:
-      return prevState;
-  }
-}
-
-// store
-const initialState = { user: null, posts: [] };
+// create store
+const initialState = {
+  user: { data: null, isLoggingIn: true },
+  posts: [],
+};
 const store = createStore(reducer, initialState);
-
-// action creator
-const logIn = (data) => {
-  return { type: 'LOG_IN', data };
-};
-const logOut = () => {
-  return { type: 'LOG_OUT' };
-};
-const addPost = (data) => {
-  return { type: 'ADD_POST', data };
-};
 
 // dispatch
 console.log('Initial State: ', store.getState());
