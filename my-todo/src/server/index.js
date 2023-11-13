@@ -4,36 +4,22 @@ const PASSWORD = '1234';
 
 // 로그인 요청
 function logInRequest(id, password) {
-  if (id === ID && password === PASSWORD) {
-    // 로그인 성공 시 nickname 반환
-    return { nickname: 'devdev' };
-  }
-  throw new Error();
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (id === ID && password === PASSWORD) {
+        // 로그인 성공 시 nickname 반환
+        resolve({ nickname: 'devdev' });
+      }
+      reject('Invalid ID/Password. Try again.');
+    }, 1000);
+  });
 }
 
 // 로그아웃 요청
 function logOutRequest() {
-  return { status: 'success' };
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve('success'), 1000);
+  });
 }
-
-// // 로그인 요청
-// function logInRequest(id, password) {
-//   return Promise((resolve, reject) => {
-//     setTimeout(() => {
-//       if (id === ID && password === PASSWORD) {
-//         // 로그인 성공 시 nickname 반환
-//         resolve({ nickname: 'devdev' });
-//       }
-//       reject('fail');
-//     }, 500);
-//   });
-// }
-
-// // 로그아웃 요청
-// function logOutRequest() {
-//   return Promise((resolve, reject) => {
-//     setTimeout(() => resolve('success'), 500);
-//   });
-// }
 
 export { logInRequest, logOutRequest };

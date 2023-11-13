@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { logIn, logOut } from '../redux/module/user';
+import { logIn, logOut, LogInState } from '../redux/module/user';
 
 export default function LogInComponent() {
   const idRef = useRef('');
@@ -8,7 +8,8 @@ export default function LogInComponent() {
 
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.user.data);
-  const isFailed = useSelector((state) => state.user.isFailed);
+  const logInState = useSelector((state) => state.user.logInState);
+  const error = useSelector((state) => state.user.error);
 
   // event handlers
   const onLogIn = useCallback((id, pw) => {
@@ -21,8 +22,10 @@ export default function LogInComponent() {
   }, []);
 
   return (
-    <>
-      {userData ? (
+    <div style={{ height: '100px' }}>
+      {logInState === LogInState.PENDING ? (
+        <div>Processing...</div>
+      ) : userData ? (
         <>
           <div>
             Hello <b>{userData.nickname}</b>
@@ -42,13 +45,13 @@ export default function LogInComponent() {
           <button onClick={() => onLogIn(idRef.current, pwRef.current)}>
             Log In
           </button>
-          {isFailed ? (
-            <div style={{ color: 'red' }}>Invalid ID/Password. Try again.</div>
+          {logInState === LogInState.REJECTED ? (
+            <div style={{ color: 'red' }}>{error}</div>
           ) : (
             <></>
           )}
         </>
       )}
-    </>
+    </div>
   );
 }
