@@ -1,11 +1,13 @@
 import { useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { logIn, logOut, LogInState } from '../redux/module/user';
+import { logIn, logOut } from '../redux/module/user';
+import { AsyncState } from '../redux/AsyncState';
 
 export default function LogInComponent() {
   const idRef = useRef('');
   const pwRef = useRef('');
 
+  // redux
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.user.data);
   const logInState = useSelector((state) => state.user.logInState);
@@ -23,7 +25,7 @@ export default function LogInComponent() {
 
   return (
     <div style={{ height: '100px' }}>
-      {logInState === LogInState.PENDING ? (
+      {logInState === AsyncState.PENDING ? (
         <div>Processing...</div>
       ) : userData ? (
         <>
@@ -45,7 +47,7 @@ export default function LogInComponent() {
           <button onClick={() => onLogIn(idRef.current, pwRef.current)}>
             Log In
           </button>
-          {logInState === LogInState.REJECTED ? (
+          {logInState === AsyncState.REJECTED ? (
             <div style={{ color: 'red' }}>{error}</div>
           ) : (
             <></>

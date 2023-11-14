@@ -1,4 +1,5 @@
 import { logInRequest, logOutRequest } from '../../server';
+import { AsyncState } from '../AsyncState';
 
 // Actions
 const LOG_IN_PENDING = 'my-todo/user/LOG_IN_PENDING';
@@ -8,16 +9,14 @@ const LOG_OUT_PENDING = 'my-todo/user/LOG_OUT_PENDING';
 const LOG_OUT_SUCCESS = 'my-todo/user/LOG_OUT_SUCCESS';
 const LOG_OUT_REJECTED = 'my-todo/user/LOG_OUT_FAILED';
 
-export const LogInState = { IDLE: 0, PENDING: 1, REJECTED: 2 };
-
 // Reducer
-const initialState = { data: null, logInState: LogInState.IDLE, error: '' };
+const initialState = { data: null, logInState: AsyncState.IDLE, error: '' };
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case LOG_IN_PENDING: {
       return {
         ...state,
-        logInState: LogInState.PENDING,
+        logInState: AsyncState.PENDING,
         error: '',
       };
     }
@@ -25,21 +24,21 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         data: action.payload,
-        logInState: LogInState.IDLE,
+        logInState: AsyncState.IDLE,
         error: '',
       };
     }
     case LOG_IN_REJECTED: {
       return {
         ...state,
-        logInState: LogInState.REJECTED,
+        logInState: AsyncState.REJECTED,
         error: action.payload,
       };
     }
     case LOG_OUT_PENDING: {
       return {
         ...state,
-        logInState: LogInState.PENDING,
+        logInState: AsyncState.PENDING,
         error: '',
       };
     }
@@ -47,14 +46,14 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         data: null,
-        logInState: LogInState.IDLE,
+        logInState: AsyncState.IDLE,
         error: '',
       };
     }
     case LOG_OUT_REJECTED: {
       return {
         ...state,
-        logInState: LogInState.REJECTED,
+        logInState: AsyncState.REJECTED,
         error: action.payload,
       };
     }
