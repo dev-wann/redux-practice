@@ -18,13 +18,6 @@ export function logInRequest(id, password) {
   });
 }
 
-// 로그아웃 요청
-export function logOutRequest() {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => resolve('success'), 1000);
-  });
-}
-
 // todos CRUD
 // create
 export function addTodoRequest(todo) {
