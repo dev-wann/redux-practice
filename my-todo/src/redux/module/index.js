@@ -1,7 +1,10 @@
 import { combineReducers } from 'redux';
-import user from './user';
-import todoList from './todoList';
+import userSlice from './user';
+import todoListReducer from './todoList';
 
-const rootReducer = combineReducers({ user, todoList });
+const rootReducer = combineReducers({
+  user: userSlice.reducer,
+  todoList: todoListReducer,
+});
 
 export default rootReducer;

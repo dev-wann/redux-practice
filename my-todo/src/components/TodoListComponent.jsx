@@ -22,7 +22,7 @@ export default function TodoListComponent() {
 
   // event handlers
   const onAddTodo = useCallback(() => {
-    dispatch(addTodo(newTodoRef.current.value));
+    dispatch(addTodo({ todo: newTodoRef.current.value }));
     newTodoRef.current.value = '';
   }, []);
 
@@ -45,7 +45,7 @@ export default function TodoListComponent() {
                 {todoList.length ? (
                   <ul style={{ paddingLeft: '20px' }}>
                     {todoList.map(([id, todo]) => (
-                      <TodoItemComponent id={id} todo={todo} />
+                      <TodoItemComponent key={id} id={id} todo={todo} />
                     ))}
                   </ul>
                 ) : (

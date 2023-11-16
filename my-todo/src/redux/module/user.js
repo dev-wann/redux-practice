@@ -1,63 +1,43 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { logInRequest } from '../../server';
 import { AsyncState } from '../AsyncState';
 
-// Actions
-const LOG_IN_PENDING = 'my-todo/user/LOG_IN_PENDING';
-const LOG_IN_SUCCESS = 'my-todo/user/LOG_IN_SUCCESS';
-const LOG_IN_REJECTED = 'my-todo/user/LOG_IN_FAILED';
-const LOG_OUT = 'my-todo/user/LOG_OUT';
-
-// Reducer
-const initialState = { data: null, logInState: AsyncState.IDLE, error: '' };
-export default function reducer(state = initialState, action) {
-  switch (action.type) {
-    case LOG_IN_PENDING: {
-      return {
-        ...state,
-        logInState: AsyncState.PENDING,
-        error: '',
-      };
-    }
-    case LOG_IN_SUCCESS: {
-      return {
-        ...state,
-        data: action.payload,
-        logInState: AsyncState.IDLE,
-        error: '',
-      };
-    }
-    case LOG_IN_REJECTED: {
-      return {
-        ...state,
-        logInState: AsyncState.REJECTED,
-        error: action.payload,
-      };
-    }
-    case LOG_OUT: {
-      return {
-        ...state,
-        data: null,
-        logInState: AsyncState.IDLE,
-        error: '',
-      };
-    }
-    default:
-      return state;
+// Thunk
+export const logIn = createAsyncThunk(
+  'my-todo/user/logIn',
+  async (data, thunkAPI) => {
+    const response = await logInRequest(data.id, data.password);
+    return response;
   }
-}
+);
 
-// Action Creators
-export function logIn(id, password) {
-  return (dispatch, getState) => {
-    dispatch({ type: LOG_IN_PENDING });
+// Slice
+const initialState = { data: null, logInState: AsyncState.IDLE, error: '' };
+const userSlice = createSlice({
+  name: 'user',
+  initialState,
+  reducers: {
+    logOut(state, action) {
+      state.data = null;
+      state.logInState = AsyncState.IDLE;
+      state.error = '';
+    },
+  },
+  extraReducers: {
+    [logIn.pending](state, action) {
+      state.logInState = AsyncState.PENDING;
+      state.error = '';
+    },
+    [logIn.fulfilled](state, action) {
+      state.data = action.payload;
+      state.logInState = AsyncState.IDLE;
+      state.error = '';
+    },
+    [logIn.rejected](state, action) {
+      state.logInState = AsyncState.REJECTED;
+      state.error = String(action.payload);
+    },
+  },
+});
 
-    const response = logInRequest(id, password);
-    response
-      .then((res) => dispatch({ type: LOG_IN_SUCCESS, payload: res }))
-      .catch((error) => dispatch({ type: LOG_IN_REJECTED, payload: error }));
-  };
-}
-
-export function logOut() {
-  return { type: LOG_OUT };
-}
+export default userSlice;

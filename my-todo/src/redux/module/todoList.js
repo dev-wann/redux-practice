@@ -1,3 +1,10 @@
+import {
+  createReducer,
+  createAsyncThunk,
+  isPending,
+  isFulfilled,
+  isRejected,
+} from '@reduxjs/toolkit';
 import { AsyncState } from '../AsyncState';
 import {
   addTodoRequest,
@@ -6,75 +13,42 @@ import {
   getTodosRequest,
 } from '../../server';
 
-// Actions
-const TODOS_PENDING = 'my-todo/todos/TODOS_PENDING';
-const TODOS_SUCCESS = 'my-todo/todos/TODOS_SUCCESS';
-const TODOS_REJECTED = 'my-todo/todos/TODOS_REJECCTED';
+// Thunk
+export const addTodo = createAsyncThunk('todoList/addTodo', (data, thunkAPI) =>
+  addTodoRequest(data.todo)
+);
+export const getTodos = createAsyncThunk(
+  'todoList/getTodos',
+  (data, thunkAPI) => getTodosRequest()
+);
+export const updateTodo = createAsyncThunk(
+  'todoList/updateTodo',
+  (data, thunkAPI) => updateTodoRequest(data.id, data.todo)
+);
+export const deleteTodo = createAsyncThunk(
+  'todoList/updateTodo',
+  (data, thunkAPI) => deleteTodoRequest(data.id)
+);
 
 // Reducer
 const initialState = { todos: {}, todosState: AsyncState.IDLE, error: '' };
-export default function reducer(state = initialState, action) {
-  switch (action.type) {
-    case TODOS_PENDING: {
-      return {
-        ...state,
-        todosState: AsyncState.PENDING,
-      };
-    }
-    case TODOS_SUCCESS: {
-      return {
-        ...state,
-        todosState: AsyncState.IDLE,
-        todos: action.payload,
-      };
-    }
-    case TODOS_REJECTED: {
-      return {
-        ...state,
-        todosState: AsyncState.REJECTED,
-        error: String(action.payload),
-      };
-    }
-    default:
-      return state;
-  }
-}
-
-// Action Creators
-export function addTodo(todo) {
-  return (dispatch, getState) => {
-    dispatch({ type: TODOS_PENDING });
-    handleResponse(addTodoRequest(todo), dispatch);
-  };
-}
-
-export function getTodos() {
-  return (dispatch, getState) => {
-    dispatch({ type: TODOS_PENDING });
-    handleResponse(getTodosRequest(), dispatch);
-  };
-}
-
-export function updateTodo(id, todo) {
-  return (dispatch, getState) => {
-    dispatch({ type: TODOS_PENDING });
-    handleResponse(updateTodoRequest(id, todo), dispatch);
-  };
-}
-
-export function deleteTodo(id) {
-  return (dispatch, getState) => {
-    dispatch({ type: TODOS_PENDING });
-    handleResponse(deleteTodoRequest(id), dispatch);
-  };
-}
-
-function handleResponse(response, dispatch) {
-  response
-    .then((res) => {
-      dispatch({ type: TODOS_SUCCESS, payload: res });
+const isTodoPending = isPending(addTodo, getTodos, updateTodo, deleteTodo);
+const isTodoFulfilled = isFulfilled(addTodo, getTodos, updateTodo, deleteTodo);
+const isTodoRejected = isRejected(addTodo, getTodos, updateTodo, deleteTodo);
+const todoListReducer = createReducer(initialState, (builder) => {
+  builder
+    .addMatcher(isTodoPending, (state, action) => {
+      state.todosState = AsyncState.PENDING;
+      state.error = '';
     })
-    .catch((error) => {
-      dispatch({ type: TODOS_REJECTED, payload: error });
+    .addMatcher(isTodoFulfilled, (state, action) => {
+      state.todos = action.payload;
+      state.todosState = AsyncState.IDLE;
+    })
+    .addMatcher(isTodoRejected, (state, action) => {
+      state.todosState = AsyncState.REJECTED;
+      state.error = String(action.payload);
     });
-}
+});
+
+export default todoListReducer;

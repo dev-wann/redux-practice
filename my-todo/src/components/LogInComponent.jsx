@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { logIn, logOut } from '../redux/module/user';
+import userSlice, { logIn } from '../redux/module/user';
 import { AsyncState } from '../redux/AsyncState';
 
 export default function LogInComponent() {
@@ -14,13 +14,13 @@ export default function LogInComponent() {
   const error = useSelector((state) => state.user.error);
 
   // event handlers
-  const onLogIn = useCallback((id, pw) => {
-    dispatch(logIn(id, pw));
+  const onLogIn = useCallback((id, password) => {
+    dispatch(logIn({ id, password }));
     idRef.current = '';
     pwRef.current = '';
   }, []);
   const onLogOut = useCallback(() => {
-    dispatch(logOut());
+    dispatch(userSlice.actions.logOut());
   }, []);
 
   return (

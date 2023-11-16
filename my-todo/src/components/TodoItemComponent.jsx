@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { deleteTodo, updateTodo } from '../redux/module/todoList';
+import { updateTodo, deleteTodo } from '../redux/module/todoList';
 import { useDispatch } from 'react-redux';
 
 export default function TodoItemComponent({ id, todo }) {
@@ -14,17 +14,17 @@ export default function TodoItemComponent({ id, todo }) {
   }, []);
   const confirmEdit = useCallback(() => {
     setEdit(false);
-    dispatch(updateTodo(id, todoRef.current.value));
+    dispatch(updateTodo({ id, todo: todoRef.current.value }));
   }, []);
   const cancelEdit = useCallback(() => {
     setEdit(false);
   }, []);
   const onDelete = useCallback(() => {
-    dispatch(deleteTodo(id));
+    dispatch(deleteTodo({ id }));
   }, []);
 
   return (
-    <li key={id}>
+    <li>
       {isEdit ? (
         <>
           <input defaultValue={todo} ref={todoRef}></input>{' '}
